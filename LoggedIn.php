@@ -257,15 +257,16 @@ if (isset($_COOKIE['username'])) {
                                 $queryResult = $conn->query("SELECT id, username, story_title, story_content FROM users_stories");
                                 $count = 0;
                                 while ($row = $queryResult->fetch_assoc()) {
+                                    if ($_COOKIE['username'] == $row['username']) {
+                                        continue;
+                                    }
                                     if ($count % 2 == 0) {
                                         echo '<div class="row">';
                                     }
+
                                     $story_preview = substr($row['story_content'], 0, 100);
                                     if (strlen($row['story_content']) > 100) {
                                         $story_preview .= '...';
-                                    }
-                                    if ($_COOKIE['username'] == $row['username']) {
-                                        continue;
                                     }
                                     echo '<div class="col-md-6">';
                                     echo '<div class="card mb-3">';
@@ -277,6 +278,7 @@ if (isset($_COOKIE['username'])) {
                                     echo '</div>';
                                     echo '</div>';
                                     echo '</div>';
+
                                     if ($count % 2 == 1) {
                                         echo '</div>';
                                     }
@@ -284,11 +286,16 @@ if (isset($_COOKIE['username'])) {
                                     $count++;
                                 }
 
+                                if ($count % 2 != 0) {
+                                    echo '</div>';
+                                }
+
                                 ?>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <br>
                 <div class="container mt-4">
                     <div class="row mb-4">
@@ -347,12 +354,19 @@ if (isset($_COOKIE['username'])) {
         $conn->close();
         header('Content-Type: application/json');
         ?>
-    <script 
-    import { configApi } from './api.js';
-    const apiKey = configApi.apiKey;
-    const apiKey = process.env.API_KEY;
-    src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap" async defer></script>
-            <script>
+        <script type="module">
+            import {
+                configApi
+            } from './api.js';
+            const apiKey = configApi.apiKey;
+
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        </script>
+        <script>
             var markersData = <?php echo json_encode($points); ?>;
 
             function initMap() {

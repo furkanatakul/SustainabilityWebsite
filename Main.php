@@ -270,11 +270,16 @@
     $conn->close();
     header('Content-Type: application/json');
     ?>
-    <script 
-    import { configApi } from './api.js';
-    const apiKey = configApi.apiKey;
-    const apiKey = process.env.API_KEY;
-    src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap" async defer></script>
+    <script type="module">
+        import { configApi } from './api.js';
+        const apiKey = configApi.apiKey;
+
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    </script>
     <script>
         var markersData = <?php echo json_encode($points); ?>;
 
